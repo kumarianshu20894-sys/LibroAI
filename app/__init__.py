@@ -30,4 +30,7 @@ def create_app():
     def home():
         return "Library System chal raha hai!"
 
+    from app.routes import auth
+    app.register_blueprint(auth)
+
     return app
