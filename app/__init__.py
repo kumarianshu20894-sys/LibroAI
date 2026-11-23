@@ -16,5 +16,7 @@ def create_app():
     db.init_app(app)
 
     from app import models  # models ko register karne ke liye import
-
+    @app.route("/")
+    def home():
+        return "library magement system is running"
     return app
