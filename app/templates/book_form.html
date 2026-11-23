@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Book Edit' if book else 'Book Add' }}{% endblock %}
+{% block content %}
+<h2>{{ 'Book Edit Karo' if book else 'Nayi Book Add Karo' }}</h2>
+
+<form method="POST">
+    <label>Title *</label><br>
+    <input type="text" name="title" value="{{ book.title if book else '' }}" required><br><br>
+
+    <label>Author</label><br>
+    <input type="text" name="author" value="{{ book.author if book and book.author else '' }}"><br><br>
+
+    <label>ISBN</label><br>
+    <input type="text" name="isbn" value="{{ book.isbn if book and book.isbn else '' }}"><br><br>
+
+    <label>Publisher</label><br>
+    <input type="text" name="publisher" value="{{ book.publisher if book and book.publisher else '' }}"><br><br>
+
+    <label>Description</label><br>
+    <textarea name="description" rows="4" cols="40">{{ book.description if book and book.description else '' }}</textarea><br><br>
+
+    {% if not book %}
+    <label>Kitni copies?</label><br>
+    <input type="number" name="copies" value="1" min="1"><br><br>
+
+    <label>Shelf</label><br>
+    <input type="text" name="shelf" placeholder="jaise A-12"><br><br>
+    {% endif %}
+
+    <button type="submit">Save</button>
+</form>
+<br>
+<a href="{{ url_for('books.book_list') }}">Wapas list par</a>
+{% endblock %}

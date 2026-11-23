@@ -33,4 +33,7 @@ def create_app():
     from app.routes import auth
     app.register_blueprint(auth)
 
+    from app.books import books
+    app.register_blueprint(books)
+    
     return app
