@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime ,date
 from app import db
 
 
@@ -35,3 +35,53 @@ class Copy(db.Model):
     shelf = db.Column(db.String(50))
     status = db.Column(db.String(20), nullable=False, default="available")  # available, issued, damaged, lost
     condition = db.Column(db.String(100))
+class Member(db.Model):
+    __tablename__ = "members"
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), unique=True, nullable=False)
+    phone = db.Column(db.String(15))
+    membership_type = db.Column(db.String(20), nullable=False, default="general")
+    status = db.Column(db.String(20), nullable=False, default="active")
+    expiry_date = db.Column(db.Date)
+
+    user = db.relationship("User", backref=db.backref("member", uselist=False))
+    issues = db.relationship("Issue", backref="member", lazy=True)
+
+
+class Issue(db.Model):
+    __tablename__ = "issues"
+
+    id = db.Column(db.Integer, primary_key=True)
+    copy_id = db.Column(db.Integer, db.ForeignKey("copies.id"), nullable=False)
+    member_id = db.Column(db.Integer, db.ForeignKey("members.id"), nullable=False)
+    issue_date = db.Column(db.Date, nullable=False, default=date.today)
+    due_date = db.Column(db.Date, nullable=False)
+    return_date = db.Column(db.Date)
+
+    copy = db.relationship("Copy", backref="issues")
+    fines = db.relationship("Fine", backref="issue", lazy=True)
+
+
+class Fine(db.Model):
+    __tablename__ = "fines"
+
+    id = db.Column(db.Integer, primary_key=True)
+    issue_id = db.Column(db.Integer, db.ForeignKey("issues.id"), nullable=False)
+    amount = db.Column(db.Numeric(8, 2), nullable=False)
+    reason = db.Column(db.String(20), nullable=False, default="late")
+    paid = db.Column(db.Boolean, nullable=False, default=False)
+    paid_date = db.Column(db.Date)
+
+
+class Reservation(db.Model):
+    __tablename__ = "reservations"
+
+    id = db.Column(db.Integer, primary_key=True)
+    book_id = db.Column(db.Integer, db.ForeignKey("books.id"), nullable=False)
+    member_id = db.Column(db.Integer, db.ForeignKey("members.id"), nullable=False)
+    status = db.Column(db.String(20), nullable=False, default="waiting")
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    book = db.relationship("Book", backref="reservations")
+    member = db.relationship("Member", backref="reservations")
