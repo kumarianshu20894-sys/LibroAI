@@ -62,11 +62,12 @@ def dashboard():
 
     member = Member.query.filter_by(user_id=current_user.id).first()
     my_issues = []
+    my_ready = []
     if member:
         my_issues = Issue.query.filter_by(member_id=member.id, return_date=None).all()
         my_ready = Reservation.query.filter_by(member_id=member.id, status="ready").all()
 
-    return render_template("dashboard_member.html", member=member, my_issues=my_issues)
+    return render_template("dashboard_member.html", member=member, my_issues=my_issues, my_ready=my_ready)
 
 
 @auth.route("/admin-only")
