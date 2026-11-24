@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Issues{% endblock %}
+{% block content %}
+<h2>Active Issues</h2>
+<p><a href="{{ url_for('issues.new_issue') }}">Nayi book issue karo</a></p>
+
+<table border="1" cellpadding="6">
+    <tr>
+        <th>Book</th>
+        <th>Copy No.</th>
+        <th>Member</th>
+        <th>Issue Date</th>
+        <th>Due Date</th>
+        <th>Status</th>
+        <th>Action</th>
+    </tr>
+    {% for issue in issues %}
+    <tr>
+        <td>{{ issue.copy.book.title }}</td>
+        <td>{{ issue.copy.copy_number }}</td>
+        <td>{{ issue.member.user.name }}</td>
+        <td>{{ issue.issue_date }}</td>
+        <td>{{ issue.due_date }}</td>
+        <td>{{ 'Overdue' if issue.due_date < today else 'Ok' }}</td>
+        <td>
+            <form method="POST" action="{{ url_for('issues.return_issue', issue_id=issue.id) }}" style="display:inline">
+                <button type="submit">Return</button>
+            </form>
+        </td>
+    </tr>
+    {% else %}
+    <tr>
+        <td colspan="7">Koi active issue nahi hai.</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

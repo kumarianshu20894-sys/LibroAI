@@ -38,5 +38,8 @@ def create_app():
 
     from app.members import members
     app.register_blueprint(members)
+
+    from app.issues import issues
+    app.register_blueprint(issues)
     
     return app
