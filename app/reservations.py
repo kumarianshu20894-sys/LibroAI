@@ -8,10 +8,15 @@ reservations = Blueprint("reservations", __name__, url_prefix="/reservations")
 
 
 @reservations.route("/")
-@role_required("admin","librarian")
+@role_required("admin", "librarian")
 def reservation_list():
-    items = Reservation.query.filter_by(status="waiting").order_by(Reservation.created_at).all()
-    return render_template("reservation_list.html",reservations=items)
+    items = (
+        Reservation.query.filter(Reservation.status.in_(["waiting", "ready"]))
+        .order_by(Reservation.created_at)
+        .all()
+    )
+    return render_template("reservation_list.html", reservations=items)
+
 
 @reservations.route("/book/<int:book_id>", methods=["POST"])
 @login_required

@@ -1,7 +1,7 @@
 from functools import wraps
 from flask import Blueprint, render_template, request, redirect, url_for, flash, abort
 from flask_login import login_user, logout_user, login_required, current_user
-from app.models import User, Book, Copy, Issue, Fine, Member
+from app.models import User, Book, Copy, Issue, Fine, Member ,Reservation
 from app import db
 from datetime import date
 
@@ -64,6 +64,8 @@ def dashboard():
     my_issues = []
     if member:
         my_issues = Issue.query.filter_by(member_id=member.id, return_date=None).all()
+        my_ready = Reservation.query.filter_by(member_id=member.id, status="ready").all()
+
     return render_template("dashboard_member.html", member=member, my_issues=my_issues)
 
 

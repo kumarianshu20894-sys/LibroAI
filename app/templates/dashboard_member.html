@@ -20,5 +20,11 @@
     <tr><td colspan="2">There are no books issued.</td></tr>
     {% endfor %}
 </table>
+<h3>Ready Reservations</h3>
+{% for r in my_ready %}
+<p>"{{ r.book.title }}" aapke liye ready hai. Library mein aakar le jaayein.</p>
+{% else %}
+<p>Koi reservation ready nahi hai.</p>
+{% endfor %}
 {% endif %}
 {% endblock %}

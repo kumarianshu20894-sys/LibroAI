@@ -1,7 +1,8 @@
 from datetime import date, timedelta
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from app import db
-from app.models import Member, Copy, Issue, Fine
+from app.models import Member, Copy, Issue, Fine, Reservation
+
 from app.routes import role_required
 
 issues = Blueprint("issues", __name__, url_prefix="/issues")
@@ -94,6 +95,17 @@ def return_issue(issue_id):
         flash(f"Book returned successfully. {late_days} days late, fine: Rs {amount}.")
     else:
         flash("Book returned successfully. No fine.")
+
+    book = issue.copy.book
+    waiting = (
+        Reservation.query.filter_by(book_id=book.id, status="waiting")
+        .order_by(Reservation.created_at)
+        .first()
+    )
+    if waiting:
+        waiting.status = "ready"
+        issue.copy.status = "reserved"
+        flash(f"This book has been reserved for {waiting.member.user.name}.")
 
     db.session.commit()
     return redirect(url_for("issues.issue_list"))
