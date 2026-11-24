@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}My Dashboard{% endblock %}
+{% block content %}
+<h2>Mera Dashboard</h2>
+
+{% if not member %}
+<p>Your member profile has not been created yet..</p>
+{% else %}
+<p>Membership: {{ member.membership_type }} | Status: {{ member.status }}</p>
+
+<h3>My Issued Books</h3>
+<table border="1" cellpadding="6">
+    <tr><th>Book</th><th>Due Date</th></tr>
+    {% for issue in my_issues %}
+    <tr>
+        <td>{{ issue.copy.book.title }}</td>
+        <td>{{ issue.due_date }}</td>
+    </tr>
+    {% else %}
+    <tr><td colspan="2">There are no books issued.</td></tr>
+    {% endfor %}
+</table>
+{% endif %}
+{% endblock %}

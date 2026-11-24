@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<h2>Dashboard</h2>
+<table border="1" cellpadding="6">
+    <tr><th>Total Books</th><td>{{ stats.total_books }}</td></tr>
+    <tr><th>Total Copies</th><td>{{ stats.total_copies }}</td></tr>
+    <tr><th>Issued Copies</th><td>{{ stats.issued_copies }}</td></tr>
+    <tr><th>Overdue Issues</th><td>{{ stats.overdue }}</td></tr>
+    <tr><th>Unpaid Fines</th><td>{{ stats.unpaid_fines }}</td></tr>
+    <tr><th>Total Members</th><td>{{ stats.total_members }}</td></tr>
+</table>
+{% endblock %}

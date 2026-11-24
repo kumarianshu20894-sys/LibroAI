@@ -1,7 +1,9 @@
 from functools import wraps
 from flask import Blueprint, render_template, request, redirect, url_for, flash, abort
 from flask_login import login_user, logout_user, login_required, current_user
-from app.models import User
+from app.models import User, Book, Copy, Issue, Fine, Member
+from app import db
+from datetime import date
 
 auth = Blueprint("auth", __name__)
 
@@ -47,11 +49,22 @@ def logout():
 @auth.route("/dashboard")
 @login_required
 def dashboard():
-    if current_user.role == "admin":
-        return "Admin dashboard"
-    if current_user.role == "librarian":
-        return "Librarian dashboard"
-    return "Member dashboard"
+    if current_user.role in ["admin","librarian"]:
+        stats = {
+            "total_books": Book.query.count(),
+            "total_copies": Copy.query.count(),
+            "issued_copies": Copy.query.filter_by(status="issued").count(),
+            "overdue": Issue.query.filter(Issue.return_date.is_(None), Issue.due_date < date.today()).count(),
+            "unpaid_fines": Fine.query.filter_by(paid=False).count(),
+            "total_members": Member.query.count(),
+        }
+        return render_template("dashboard_staff.html", stats=stats)
+
+    member = Member.query.filter_by(user_id=current_user.id).first()
+    my_issues = []
+    if member:
+        my_issues = Issue.query.filter_by(member_id=member.id, return_date=None).all()
+    return render_template("dashboard_member.html", member=member, my_issues=my_issues)
 
 
 @auth.route("/admin-only")
