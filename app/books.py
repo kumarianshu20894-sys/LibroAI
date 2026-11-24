@@ -109,3 +109,10 @@ def delete_book(book_id):
 
     flash("Book delete ho gayi.")
     return redirect(url_for("books.book_list"))
+
+
+@books.route("/<int:book_id>")
+@login_required
+def book_detail(book_id):
+    book = db.get_or_404(Book, book_id)
+    return render_template("book_detail.html", book=book)

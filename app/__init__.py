@@ -44,5 +44,8 @@ def create_app():
 
     from app.fines import fines
     app.register_blueprint(fines)
+
+    from app.reservations import reservations
+    app.register_blueprint(reservations)
     
     return app

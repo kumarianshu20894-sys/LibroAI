@@ -11,12 +11,16 @@
 
 <table border="1" cellpadding="6">
     <tr>
-        <th>Title</th><th>Author</th><th>ISBN</th><th>Copies</th><th>Available</th>
+        <th>Title</th>
+        <th>Author</th>
+        <th>ISBN</th>
+        <th>Copies</th>
+        <th>Available</th>
         {% if current_user.role in ['admin', 'librarian'] %}<th>Action</th>{% endif %}
     </tr>
     {% for book in pagination.items %}
     <tr>
-        <td>{{ book.title }}</td>
+        <td><a href="{{ url_for('books.book_detail', book_id=book.id) }}">{{ book.title }}</a></td>
         <td>{{ book.author or '-' }}</td>
         <td>{{ book.isbn or '-' }}</td>
         <td>{{ book.copies|length }}</td>
@@ -33,16 +37,18 @@
         {% endif %}
     </tr>
     {% else %}
-    <tr><td colspan="6">Koi book nahi mili.</td></tr>
+    <tr>
+        <td colspan="6">Koi book nahi mili.</td>
+    </tr>
     {% endfor %}
 </table>
 
 <br>
 {% if pagination.has_prev %}
-    <a href="{{ url_for('books.book_list', page=pagination.prev_num, q=q) }}">&laquo; Pichhla</a>
+<a href="{{ url_for('books.book_list', page=pagination.prev_num, q=q) }}">&laquo; Pichhla</a>
 {% endif %}
 Page {{ pagination.page }} / {{ pagination.pages or 1 }}
 {% if pagination.has_next %}
-    <a href="{{ url_for('books.book_list', page=pagination.next_num, q=q) }}">Agla &raquo;</a>
+<a href="{{ url_for('books.book_list', page=pagination.next_num, q=q) }}">Agla &raquo;</a>
 {% endif %}
 {% endblock %}

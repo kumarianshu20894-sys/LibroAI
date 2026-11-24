@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}{{ book.title }}{% endblock %}
+{% block content %}
+<h2>{{ book.title }}</h2>
+
+<p><b>Author:</b> {{ book.author or '-' }}</p>
+<p><b>Publisher:</b> {{ book.publisher or '-' }}</p>
+<p><b>ISBN:</b> {{ book.isbn or '-' }}</p>
+<p><b>Description:</b> {{ book.description or '-' }}</p>
+
+<h3>Copies</h3>
+<p>Total: {{ book.copies|length }} | Available: {{ book.copies|selectattr('status', 'equalto', 'available')|list|length }}</p>
+
+<table border="1" cellpadding="6">
+    <tr><th>Copy No.</th><th>Shelf</th><th>Status</th><th>Condition</th></tr>
+    {% for copy in book.copies %}
+    <tr>
+        <td>{{ copy.copy_number }}</td>
+        <td>{{ copy.shelf or '-' }}</td>
+        <td>{{ copy.status }}</td>
+        <td>{{ copy.condition or '-' }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+{% if current_user.role == 'member' and book.copies|selectattr('status', 'equalto', 'available')|list|length == 0 %}
+<form method="POST" action="{{ url_for('reservations.reserve_book', book_id=book.id) }}">
+    <button type="submit">Reserve karo</button>
+</form>
+{% endif %}
+
+<br>
+{% if current_user.role in ['admin', 'librarian'] %}
+    <a href="{{ url_for('books.edit_book', book_id=book.id) }}">Edit karo</a> |
+{% endif %}
+<a href="{{ url_for('books.book_list') }}">Wapas list par</a>
+{% endblock %}

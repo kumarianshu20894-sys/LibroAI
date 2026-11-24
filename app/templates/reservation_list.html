@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Reservations{% endblock %}
+{% block content %}
+<h2>Waiting Reservations</h2>
+
+<table border="1" cellpadding="6">
+    <tr>
+        <th>Book</th>
+        <th>Member</th>
+        <th>Date</th>
+    </tr>
+    {% for r in reservations %}
+    <tr>
+        <td>{{ r.book.title }}</td>
+        <td>{{ r.member.user.name }}</td>
+        <td>{{ r.created_at.strftime('%d-%m-%Y') }}</td>
+    </tr>
+    {% else %}
+    <tr>
+        <td colspan="3">No reservations found.</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}
