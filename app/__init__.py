@@ -41,5 +41,8 @@ def create_app():
 
     from app.issues import issues
     app.register_blueprint(issues)
+
+    from app.fines import fines
+    app.register_blueprint(fines)
     
     return app

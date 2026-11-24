@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Fines{% endblock %}
+{% block content %}
+<h2>Unpaid Fines</h2>
+
+<table border="1" cellpadding="6">
+    <tr>
+        <th>Issue ID</th>
+        <th>Amount</th>
+        <th>Reason</th>
+        <th>Action</th>
+    </tr>
+    {% for f in fines %}
+    <tr>
+        <td>{{ f.issue_id }}</td>
+        <td>Rs {{ f.amount }}</td>
+        <td>{{ f.reason }}</td>
+        <td>
+            <form method="POST" action="{{ url_for('fines.pay_fine', fine_id=f.id) }}" style="display:inline">
+                <button type="submit">Mark as Paid</button>
+            </form>
+        </td>
+    </tr>
+    {% else %}
+    <tr>
+        <td colspan="4">No unpaid fines.</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

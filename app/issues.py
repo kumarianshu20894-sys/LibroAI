@@ -33,6 +33,16 @@ def new_issue():
             flash("Member or book copy not found.")
             return redirect(url_for("issues.new_issue"))
 
+        unpaid = (
+            Fine.query.join(Issue, Fine.issue_id == Issue.id)
+            .filter(Issue.member_id == member.id, Fine.paid == False)
+            .count()
+        )
+
+        if unpaid > 0:
+            flash("This member has an unpaid fine. Please clear the fine first.")
+            return redirect(url_for("issues.new_issue"))
+
         if member.status != "active":
             flash("This member is not active (blocked or expired).")
             return redirect(url_for("issues.new_issue"))
