@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Member Add{% endblock %}
+{% block content %}
+<h2>Add a New Member</h2>
+
+<form method="POST">
+    <label for="">Name *</label><br>
+    <input type="text" name="name" required><br><br>
+
+    <label for="">Email *</label><br>
+    <input type="email" name="email" required><br><br>
+
+    <label for="">Password *</label><br>
+    <input type="password" name="password" required><br><br>
+
+    <label for="">Phone</label><br>
+    <input type="text" name="phone"><br><br>
+
+    <label for="">Membership Type</label><br>
+    <select name="membership_type" id="">
+        <option value="general">General (2 books)</option>
+        <option value="student">Student (3 books)</option>
+        <option value="staff">Staff (5 books)</option>
+    </select><br><br>
+
+    <button type="submit">Save</button>
+
+</form>
+<br>
+<a href="{{ url_for('members.member_list')}}">Back to list</a>
+{% endblock %}

@@ -35,5 +35,8 @@ def create_app():
 
     from app.books import books
     app.register_blueprint(books)
+
+    from app.members import members
+    app.register_blueprint(members)
     
     return app

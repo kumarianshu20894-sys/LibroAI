@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Members{% endblock %}
+{% block content %}
+<h2>Members</h2>
+<p><a href="{{url_for('members.add_member')}}">Add a new member</a></p>
+
+<table border="1" cellpadding="6">
+    <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Phone</th>
+        <th>Type</th>
+        <th>Status</th>
+    </tr>
+    {% for m in members %}
+    <tr>
+        <td>{{ m.user.name }}</td>
+        <td>{{ m.user.email }}</td>
+        <td>{{ m.phone or '-' }}</td>
+        <td>{{ m.membership_type }}</td>
+        <td>{{ m.status }}</td>
+    </tr>
+    {% else %}
+    <tr>
+        <td colspan="5">
+            No members found.
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}
