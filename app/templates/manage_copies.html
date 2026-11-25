@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}Copies - {{ book.title }}{% endblock %}
+{% block content %}
+<h2>Copies: {{ book.title }}</h2>
+
+<h3>Nayi copies add karo</h3>
+<form method="POST">
+    <input type="hidden" name="action" value="add">
+    <label>Kitni copies?</label>
+    <input type="number" name="count" value="1" min="1">
+    <label>Shelf</label>
+    <input type="text" name="shelf" placeholder="jaise A-12">
+    <button type="submit">Add</button>
+</form>
+
+<p>
+    Total: {{ book.copies|length }} |
+    Active (removed chhod kar): {{ book.copies|rejectattr('status', 'equalto', 'removed')|list|length }} |
+    Available: {{ book.copies|selectattr('status', 'equalto', 'available')|list|length }}
+</p>
+
+<h3>Existing copies</h3>
+<table border="1" cellpadding="6">
+    <tr><th>Copy No.</th><th>Shelf</th><th>Status</th><th>Reference</th><th>Status badlo</th></tr>
+    {% for copy in book.copies %}
+    <tr>
+        <td>{{ copy.copy_number }}</td>
+        <td>{{ copy.shelf or '-' }}</td>
+        <td>{{ copy.status }}</td>
+        <td>{{ 'Yes' if copy.is_reference else 'No' }}</td>
+        <td>
+            {% if copy.status in ['issued', 'reserved'] %}
+                <i>Issued/reserved</i>
+            {% else %}
+            <form method="POST" style="display:inline">
+                <input type="hidden" name="action" value="status">
+                <input type="hidden" name="copy_id" value="{{ copy.id }}">
+                <select name="new_status">
+                    <option value="available" {% if copy.status == 'available' %}selected{% endif %}>available</option>
+                    <option value="damaged" {% if copy.status == 'damaged' %}selected{% endif %}>damaged</option>
+                    <option value="lost" {% if copy.status == 'lost' %}selected{% endif %}>lost</option>
+                    <option value="removed" {% if copy.status == 'removed' %}selected{% endif %}>removed (remove from the library)</option>
+                </select>
+                <button type="submit">Save</button>
+            </form>
+            {% endif %}
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
+<br>
+<a href="{{ url_for('books.book_detail', book_id=book.id) }}">Book detail par wapas</a>
+{% endblock %}

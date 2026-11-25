@@ -2,17 +2,17 @@ from datetime import date, timedelta
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from app import db
 from app.models import Member, Copy, Issue, Fine, Reservation
-
 from app.routes import role_required
 
 issues = Blueprint("issues", __name__, url_prefix="/issues")
-RENEW_DAYS = 7
-MAX_RENEWALS = 1
+
 LOAN_DAYS = 14
 STUDENT_LOAN_DAYS = 21
 FINE_PER_DAY = 2
 FINE_CAP = 100
 MAX_BOOKS = {"student": 3, "staff": 5, "general": 2}
+RENEW_DAYS = 7
+MAX_RENEWALS = 1
 
 
 @issues.route("/")
@@ -41,7 +41,6 @@ def new_issue():
             .filter(Issue.member_id == member.id, Fine.paid == False)
             .count()
         )
-
         if unpaid > 0:
             flash("This member has an unpaid fine. Please clear the fine first.")
             return redirect(url_for("issues.new_issue"))
@@ -63,6 +62,7 @@ def new_issue():
         if active_count >= limit:
             flash(f"This member's limit is {limit} books, and they have already borrowed {active_count}.")
             return redirect(url_for("issues.new_issue"))
+
         loan_days = STUDENT_LOAN_DAYS if member.membership_type == "student" else LOAN_DAYS
         issue = Issue(
             copy_id=copy.id,
@@ -116,6 +116,7 @@ def return_issue(issue_id):
     db.session.commit()
     return redirect(url_for("issues.issue_list"))
 
+
 @issues.route("/<int:issue_id>/renew", methods=["POST"])
 @role_required("admin", "librarian")
 def renew_issue(issue_id):
@@ -129,7 +130,10 @@ def renew_issue(issue_id):
         flash("This book has reached its renewal limit (1 renewal).")
         return redirect(url_for("issues.issue_list"))
 
-    if issue.copy.book.reservations and any(r.status == "waiting" for r in issue.copy.book.reservations):
+    has_waiting = Reservation.query.filter_by(
+        book_id=issue.copy.book_id, status="waiting"
+    ).first() is not None
+    if has_waiting:
         flash("This book has a reservation, so it cannot be renewed.")
         return redirect(url_for("issues.issue_list"))
 
@@ -137,5 +141,5 @@ def renew_issue(issue_id):
     issue.renew_count += 1
     db.session.commit()
 
-    flash(f"Renewal ho gayi. Nayi due date: {issue.due_date}")
+    flash(f"Renewal done. New due date: {issue.due_date}")
     return redirect(url_for("issues.issue_list"))

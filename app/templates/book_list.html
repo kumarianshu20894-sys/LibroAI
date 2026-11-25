@@ -23,11 +23,12 @@
         <td><a href="{{ url_for('books.book_detail', book_id=book.id) }}">{{ book.title }}</a></td>
         <td>{{ book.author or '-' }}</td>
         <td>{{ book.isbn or '-' }}</td>
-        <td>{{ book.copies|length }}</td>
+        <td>{{ book.copies|rejectattr('status', 'equalto', 'removed')|list|length }}</td>
         <td>{{ book.copies|selectattr('status', 'equalto', 'available')|list|length }}</td>
         {% if current_user.role in ['admin', 'librarian'] %}
         <td>
             <a href="{{ url_for('books.edit_book', book_id=book.id) }}">Edit</a>
+            <a href="{{ url_for('books.manage_copies', book_id=book.id) }}">Copies manage karo</a> |
             {% if current_user.role == 'admin' %}
             <form method="POST" action="{{ url_for('books.delete_book', book_id=book.id) }}" style="display:inline">
                 <button type="submit" onclick="return confirm('Pakka delete karna hai?')">Delete</button>

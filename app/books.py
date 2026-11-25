@@ -137,3 +137,46 @@ def delete_book(book_id):
 def book_detail(book_id):
     book = db.get_or_404(Book, book_id)
     return render_template("book_detail.html", book=book)
+
+
+@books.route("/<int:book_id>/copies", methods=["GET", "POST"])
+@role_required("admin", "librarian")
+def manage_copies(book_id):
+    book = db.get_or_404(Book, book_id)
+
+    if request.method == "POST":
+        action = request.form.get("action")
+
+        if action == "add":
+            count = request.form.get("count", 1, type=int) or 1
+            shelf = request.form.get("shelf", "").strip()
+            last_number = max([c.copy_number for c in book.copies], default=0)
+            for n in range(1, count + 1):
+                db.session.add(Copy(
+                    book=book,
+                    copy_number=last_number + n,
+                    shelf=shelf,
+                    status="available",
+                    is_reference=bool(request.form.get("is_reference")),
+                ))
+            db.session.commit()
+            flash(f"{count} nayi copies add ho gayi.")
+
+        elif action == "status":
+            copy = db.get_or_404(Copy, request.form.get("copy_id", type=int))
+            new_status = request.form.get("new_status")
+
+            if copy.book_id != book.id:
+                flash("Ye copy is book ki nahi hai.")
+            elif copy.status in ("issued", "reserved"):
+                flash("Ye copy abhi issued ya reserved hai. Pehle return karwayein.")
+            elif new_status not in ("available", "damaged", "lost" ,"removed"):
+                flash("Wrong status!.")
+            else:
+                copy.status = new_status
+                db.session.commit()
+                flash(f"Copy {copy.copy_number} ka status {new_status} ho gaya.")
+
+        return redirect(url_for("books.manage_copies", book_id=book.id))
+
+    return render_template("manage_copies.html", book=book)
