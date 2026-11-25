@@ -33,11 +33,11 @@
             <form method="POST" action="{{ url_for('issues.mark_lost', issue_id=issue.id) }}" style="display:inline">
                 <button type="submit" onclick="return confirm('Pakka lost mark karna hai?')">Lost</button>
             </form>
-            {% if issue.renew_count < 1 %} <form method="POST"
-                action="{{ url_for('issues.renew_issue', issue_id=issue.id) }}" style="display:inline">
+                        {% if issue.renew_count < 1 %}
+            <form method="POST" action="{{ url_for('issues.renew_issue', issue_id=issue.id) }}" style="display:inline">
                 <button type="submit">Renew</button>
-                </form>
-                {% endif %}
+            </form>
+            {% endif %}
         </td>
     </tr>
     {% else %}
