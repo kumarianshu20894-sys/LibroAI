@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_required
 from app import db
-from app.models import Book, Copy
+from app.models import Book, Copy, Issue, Reservation
 from app.routes import role_required
 
 books = Blueprint("books", __name__, url_prefix="/books")
@@ -47,17 +47,19 @@ def add_book():
             description=request.form.get("description", "").strip(),
         )
         db.session.add(book)
-        db.session.flush()  # book.id ke liye
+        db.session.flush()
 
         copies_count = request.form.get("copies", 1, type=int) or 1
         shelf = request.form.get("shelf", "").strip()
+        is_reference = bool(request.form.get("is_reference"))
         for n in range(1, copies_count + 1):
             db.session.add(Copy(
                 book=book,
                 copy_number=n,
                 shelf=shelf,
                 status="available",
-                is_reference=bool(request.form.get("is_reference"))))
+                is_reference=is_reference,
+            ))
 
         db.session.commit()
         flash("Book add ho gayi.")
@@ -102,9 +104,23 @@ def edit_book(book_id):
 @role_required("admin")
 def delete_book(book_id):
     book = db.get_or_404(Book, book_id)
+    copy_ids = [c.id for c in book.copies]
 
-    if any(c.status == "issued" for c in book.copies):
-        flash("Is book ki kuch copies issued hain, pehle unhe return karwayein.")
+    # 1. Koi bhi issue record (active ya purana) ho to delete nahi
+    has_issue_history = bool(copy_ids) and Issue.query.filter(
+        Issue.copy_id.in_(copy_ids)
+    ).first() is not None
+
+    # 2. Koi bhi reservation record (kisi bhi status ka) ho to delete nahi
+    has_reservation_history = Reservation.query.filter_by(book_id=book.id).first() is not None
+
+    if has_issue_history or has_reservation_history:
+        flash("Is book ka issue ya reservation record hai, isliye delete nahi ho sakti.")
+        return redirect(url_for("books.book_list"))
+
+    # 3. Koi copy available nahi hai (issued, reserved, damaged) to delete nahi
+    if any(c.status != "available" for c in book.copies):
+        flash("Is book ki kuch copies available nahi hain, isliye delete nahi ho sakti.")
         return redirect(url_for("books.book_list"))
 
     for copy in book.copies:

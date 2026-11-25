@@ -26,6 +26,11 @@
             <form method="POST" action="{{ url_for('issues.return_issue', issue_id=issue.id) }}" style="display:inline">
                 <button type="submit">Return</button>
             </form>
+                        {% if issue.renew_count < 1 %}
+            <form method="POST" action="{{ url_for('issues.renew_issue', issue_id=issue.id) }}" style="display:inline">
+                <button type="submit">Renew</button>
+            </form>
+            {% endif %}
         </td>
     </tr>
     {% else %}

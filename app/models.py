@@ -67,6 +67,7 @@ class Issue(db.Model):
     issue_date = db.Column(db.Date, nullable=False, default=date.today)
     due_date = db.Column(db.Date, nullable=False)
     return_date = db.Column(db.Date)
+    renew_count = db.Column(db.Integer, nullable=False, default=0)
 
     copy = db.relationship("Copy", backref="issues")
     fines = db.relationship("Fine", backref="issue", lazy=True)

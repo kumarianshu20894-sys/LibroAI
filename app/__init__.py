@@ -3,12 +3,19 @@ from dotenv import load_dotenv
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
-
+from sqlalchemy import event
+from sqlalchemy.engine import Engine
 load_dotenv()
 
 db = SQLAlchemy()
 login_manager = LoginManager()
 login_manager.login_view = "auth.login"
+
+@event.listens_for(Engine, "connect")
+def enable_sqlite_foreign_keys(dbapi_connection, connection_record):
+    cursor = dbapi_connection.cursor()
+    cursor.execute("PRAGMA foreign_keys=ON")
+    cursor.close()
 
 
 def create_app():

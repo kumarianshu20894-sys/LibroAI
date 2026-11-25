@@ -6,7 +6,8 @@ from app.models import Member, Copy, Issue, Fine, Reservation
 from app.routes import role_required
 
 issues = Blueprint("issues", __name__, url_prefix="/issues")
-
+RENEW_DAYS = 7
+MAX_RENEWALS = 1
 LOAN_DAYS = 14
 STUDENT_LOAN_DAYS = 21
 FINE_PER_DAY = 2
@@ -113,4 +114,28 @@ def return_issue(issue_id):
         flash(f"This book has been reserved for {waiting.member.user.name}.")
 
     db.session.commit()
+    return redirect(url_for("issues.issue_list"))
+
+@issues.route("/<int:issue_id>/renew", methods=["POST"])
+@role_required("admin", "librarian")
+def renew_issue(issue_id):
+    issue = db.get_or_404(Issue, issue_id)
+
+    if issue.return_date:
+        flash("This book has already been returned.")
+        return redirect(url_for("issues.issue_list"))
+
+    if issue.renew_count >= MAX_RENEWALS:
+        flash("This book has reached its renewal limit (1 renewal).")
+        return redirect(url_for("issues.issue_list"))
+
+    if issue.copy.book.reservations and any(r.status == "waiting" for r in issue.copy.book.reservations):
+        flash("This book has a reservation, so it cannot be renewed.")
+        return redirect(url_for("issues.issue_list"))
+
+    issue.due_date = issue.due_date + timedelta(days=RENEW_DAYS)
+    issue.renew_count += 1
+    db.session.commit()
+
+    flash(f"Renewal ho gayi. Nayi due date: {issue.due_date}")
     return redirect(url_for("issues.issue_list"))
