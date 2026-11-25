@@ -42,6 +42,8 @@ class Copy(db.Model):
     shelf = db.Column(db.String(50))
     status = db.Column(db.String(20), nullable=False, default="available")  # available, issued, damaged, lost
     condition = db.Column(db.String(100))
+    is_reference = db.Column(db.Boolean, nullable=False, default=False)
+
 class Member(db.Model):
     __tablename__ = "members"
 

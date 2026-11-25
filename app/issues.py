@@ -52,6 +52,10 @@ def new_issue():
             flash("This copy is currently unavailable.")
             return redirect(url_for("issues.new_issue"))
 
+        if copy.is_reference:
+            flash("Reference books cannot be borrowed; they are for reading in the library only.")
+            return redirect(url_for("issues.new_issue"))
+
         active_count = Issue.query.filter_by(member_id=member.id, return_date=None).count()
         limit = MAX_BOOKS.get(member.membership_type, 2)
         if active_count >= limit:

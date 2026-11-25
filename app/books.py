@@ -52,7 +52,12 @@ def add_book():
         copies_count = request.form.get("copies", 1, type=int) or 1
         shelf = request.form.get("shelf", "").strip()
         for n in range(1, copies_count + 1):
-            db.session.add(Copy(book=book, copy_number=n, shelf=shelf, status="available"))
+            db.session.add(Copy(
+                book=book,
+                copy_number=n,
+                shelf=shelf,
+                status="available",
+                is_reference=bool(request.form.get("is_reference"))))
 
         db.session.commit()
         flash("Book add ho gayi.")
