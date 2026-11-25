@@ -8,6 +8,7 @@ from app.routes import role_required
 issues = Blueprint("issues", __name__, url_prefix="/issues")
 
 LOAN_DAYS = 14
+STUDENT_LOAN_DAYS = 21
 FINE_PER_DAY = 2
 FINE_CAP = 100
 MAX_BOOKS = {"student": 3, "staff": 5, "general": 2}
@@ -61,12 +62,12 @@ def new_issue():
         if active_count >= limit:
             flash(f"This member's limit is {limit} books, and they have already borrowed {active_count}.")
             return redirect(url_for("issues.new_issue"))
-
+        loan_days = STUDENT_LOAN_DAYS if member.membership_type == "student" else LOAN_DAYS
         issue = Issue(
             copy_id=copy.id,
             member_id=member.id,
             issue_date=date.today(),
-            due_date=date.today() + timedelta(days=LOAN_DAYS),
+            due_date=date.today() + timedelta(days=loan_days),
         )
         copy.status = "issued"
         db.session.add(issue)
