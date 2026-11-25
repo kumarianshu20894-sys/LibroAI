@@ -30,9 +30,14 @@ def add_book():
     if request.method == "POST":
         title = request.form.get("title", "").strip()
         isbn = request.form.get("isbn", "").strip() or None
+        price = request.form.get("price", type=float)
 
         if not title:
             flash("Title zaroori hai.")
+            return render_template("book_form.html", book=None)
+
+        if price is None or price < 0:
+            flash("Price zaroori hai aur 0 se kam nahi ho sakta.")
             return render_template("book_form.html", book=None)
 
         if isbn and Book.query.filter_by(isbn=isbn).first():
@@ -45,6 +50,7 @@ def add_book():
             isbn=isbn,
             publisher=request.form.get("publisher", "").strip(),
             description=request.form.get("description", "").strip(),
+            price=price,
         )
         db.session.add(book)
         db.session.flush()
@@ -76,9 +82,14 @@ def edit_book(book_id):
     if request.method == "POST":
         title = request.form.get("title", "").strip()
         isbn = request.form.get("isbn", "").strip() or None
+        price = request.form.get("price", type=float)
 
         if not title:
             flash("Title zaroori hai.")
+            return render_template("book_form.html", book=book)
+
+        if price is None or price < 0:
+            flash("Price zaroori hai aur 0 se kam nahi ho sakta.")
             return render_template("book_form.html", book=book)
 
         if isbn:
@@ -92,6 +103,7 @@ def edit_book(book_id):
         book.isbn = isbn
         book.publisher = request.form.get("publisher", "").strip()
         book.description = request.form.get("description", "").strip()
+        book.price = price
         db.session.commit()
 
         flash("Book update ho gayi.")
@@ -157,7 +169,6 @@ def manage_copies(book_id):
                     copy_number=last_number + n,
                     shelf=shelf,
                     status="available",
-                    is_reference=bool(request.form.get("is_reference")),
                 ))
             db.session.commit()
             flash(f"{count} nayi copies add ho gayi.")
@@ -170,8 +181,8 @@ def manage_copies(book_id):
                 flash("Ye copy is book ki nahi hai.")
             elif copy.status in ("issued", "reserved"):
                 flash("Ye copy abhi issued ya reserved hai. Pehle return karwayein.")
-            elif new_status not in ("available", "damaged", "lost" ,"removed"):
-                flash("Wrong status!.")
+            elif new_status not in ("available", "damaged", "lost", "removed"):
+                flash("Wrong status!")
             else:
                 copy.status = new_status
                 db.session.commit()

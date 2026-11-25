@@ -16,6 +16,9 @@
     <label>Publisher</label><br>
     <input type="text" name="publisher" value="{{ book.publisher if book and book.publisher else '' }}"><br><br>
 
+    <label>Price (Rs) *</label><br>
+    <input type="number" name="price" step="0.01" min="0" value="{{ book.price if book and book.price else '' }}" required><br><br>
+
     <label>Description</label><br>
     <textarea name="description" rows="4" cols="40">{{ book.description if book and book.description else '' }}</textarea><br><br>
 
@@ -32,5 +35,5 @@
     <button type="submit">Save</button>
 </form>
 <br>
-<a href="{{ url_for('books.book_list') }}">Wapas list par</a>
+<a href="{{ url_for('books.book_list') }}">Back to list</a>
 {% endblock %}

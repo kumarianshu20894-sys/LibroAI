@@ -91,29 +91,66 @@ def return_issue(issue_id):
         flash("This book has already been returned.")
         return redirect(url_for("issues.issue_list"))
 
+    condition = request.form.get("condition", "ok")
+    book = issue.copy.book
+
+    if condition == "damaged" and book.price is None:
+        flash("Is book ka price set nahi hai. Pehle book edit karke price daalein.")
+        return redirect(url_for("issues.issue_list"))
+
     issue.return_date = date.today()
-    issue.copy.status = "available"
+    copy = issue.copy
+    messages = []
 
     late_days = (issue.return_date - issue.due_date).days
     if late_days > 0:
         amount = min(late_days * FINE_PER_DAY, FINE_CAP)
         db.session.add(Fine(issue_id=issue.id, amount=amount, reason="late"))
-        flash(f"Book returned successfully. {late_days} days late, fine: Rs {amount}.")
-    else:
-        flash("Book returned successfully. No fine.")
+        messages.append(f"{late_days} din late, late fine Rs {amount}.")
 
-    book = issue.copy.book
-    waiting = (
-        Reservation.query.filter_by(book_id=book.id, status="waiting")
-        .order_by(Reservation.created_at)
-        .first()
-    )
-    if waiting:
-        waiting.status = "ready"
-        issue.copy.status = "reserved"
-        flash(f"This book has been reserved for {waiting.member.user.name}.")
+    if condition == "damaged":
+        damage_amount = book.price * 2
+        db.session.add(Fine(issue_id=issue.id, amount=damage_amount, reason="damage"))
+        copy.status = "damaged"
+        messages.append(f"Damage charge Rs {damage_amount}.")
+    else:
+        copy.status = "available"
+        waiting = (
+            Reservation.query.filter_by(book_id=book.id, status="waiting")
+            .order_by(Reservation.created_at)
+            .first()
+        )
+        if waiting:
+            waiting.status = "ready"
+            copy.status = "reserved"
+            messages.append(f"Ye book {waiting.member.user.name} ke liye reserved ho gayi hai.")
 
     db.session.commit()
+    flash("Book returned. " + (" ".join(messages) if messages else "Koi fine nahi."))
+    return redirect(url_for("issues.issue_list"))
+
+
+@issues.route("/<int:issue_id>/lost", methods=["POST"])
+@role_required("admin", "librarian")
+def mark_lost(issue_id):
+    issue = db.get_or_404(Issue, issue_id)
+
+    if issue.return_date:
+        flash("Ye book pehle hi return ho chuki hai.")
+        return redirect(url_for("issues.issue_list"))
+
+    book = issue.copy.book
+    if book.price is None:
+        flash("Is book ka price set nahi hai. Pehle book edit karke price daalein.")
+        return redirect(url_for("issues.issue_list"))
+
+    lost_amount = book.price * 2
+    issue.return_date = date.today()
+    issue.copy.status = "lost"
+    db.session.add(Fine(issue_id=issue.id, amount=lost_amount, reason="lost"))
+    db.session.commit()
+
+    flash(f"Book lost mark ho gayi. Charge Rs {lost_amount}.")
     return redirect(url_for("issues.issue_list"))
 
 
@@ -123,23 +160,21 @@ def renew_issue(issue_id):
     issue = db.get_or_404(Issue, issue_id)
 
     if issue.return_date:
-        flash("This book has already been returned.")
+        flash("Ye book pehle hi return ho chuki hai.")
         return redirect(url_for("issues.issue_list"))
 
     if issue.renew_count >= MAX_RENEWALS:
-        flash("This book has reached its renewal limit (1 renewal).")
+        flash("Is book ki renewal limit (1 baar) khatam ho chuki hai.")
         return redirect(url_for("issues.issue_list"))
 
-    has_waiting = Reservation.query.filter_by(
-        book_id=issue.copy.book_id, status="waiting"
-    ).first() is not None
+    has_waiting = Reservation.query.filter_by(book_id=issue.copy.book_id, status="waiting").first()
     if has_waiting:
-        flash("This book has a reservation, so it cannot be renewed.")
+        flash("Is book ki koi reservation hai, isliye renew nahi ho sakti.")
         return redirect(url_for("issues.issue_list"))
 
     issue.due_date = issue.due_date + timedelta(days=RENEW_DAYS)
     issue.renew_count += 1
     db.session.commit()
 
-    flash(f"Renewal done. New due date: {issue.due_date}")
+    flash(f"Renewal ho gayi. Nayi due date: {issue.due_date}")
     return redirect(url_for("issues.issue_list"))

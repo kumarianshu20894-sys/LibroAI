@@ -29,6 +29,7 @@ class Book(db.Model):
     isbn = db.Column(db.String(20), unique=True)
     publisher = db.Column(db.String(150))
     description = db.Column(db.Text)
+    price = db.Column(db.Numeric(8, 2), nullable=True)
 
     copies = db.relationship("Copy", backref="book", lazy=True)
 
