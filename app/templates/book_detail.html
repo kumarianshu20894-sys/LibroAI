@@ -25,6 +25,7 @@
 
 {% if current_user.role == 'member' and book.copies|selectattr('status', 'equalto', 'available')|list|length == 0 %}
 <form method="POST" action="{{ url_for('reservations.reserve_book', book_id=book.id) }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     <button type="submit">Reserve karo</button>
 </form>
 {% endif %}

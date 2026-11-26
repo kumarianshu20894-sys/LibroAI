@@ -24,6 +24,7 @@
         <td>{{ 'Overdue' if issue.due_date < today else 'Ok' }}</td>
         <td>
             <form method="POST" action="{{ url_for('issues.return_issue', issue_id=issue.id) }}" style="display:inline">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <select name="condition">
                     <option value="ok">OK</option>
                     <option value="damaged">Damaged</option>
@@ -31,10 +32,14 @@
                 <button type="submit">Return</button>
             </form>
             <form method="POST" action="{{ url_for('issues.mark_lost', issue_id=issue.id) }}" style="display:inline">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
                 <button type="submit" onclick="return confirm('Pakka lost mark karna hai?')">Lost</button>
             </form>
                         {% if issue.renew_count < 1 %}
             <form method="POST" action="{{ url_for('issues.renew_issue', issue_id=issue.id) }}" style="display:inline">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                
                 <button type="submit">Renew</button>
             </form>
             {% endif %}

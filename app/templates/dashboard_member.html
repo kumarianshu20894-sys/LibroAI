@@ -30,6 +30,8 @@
         <td>Ready (library mein aakar le jaayein)</td>
         <td>
             <form method="POST" action="{{ url_for('reservations.cancel_reservation', reservation_id=r.id) }}" style="display:inline">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
                 <button type="submit" onclick="return confirm('Reservation cancel karni hai?')">Cancel</button>
             </form>
         </td>
@@ -41,6 +43,8 @@
         <td>Waiting</td>
         <td>
             <form method="POST" action="{{ url_for('reservations.cancel_reservation', reservation_id=r.id) }}" style="display:inline">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                
                 <button type="submit" onclick="return confirm('Reservation cancel karni hai?')">Cancel</button>
             </form>
         </td>

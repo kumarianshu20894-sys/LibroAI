@@ -5,6 +5,8 @@
 
 <h3>Naam badlo</h3>
 <form method="POST" action="{{ url_for('profile.edit_profile') }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
     <label>Naam</label><br>
     <input type="text" name="name" value="{{ current_user.name }}" required><br><br>
     <button type="submit">Save</button>
@@ -14,6 +16,8 @@
 
 <h3>Password badlo</h3>
 <form method="POST" action="{{ url_for('profile.change_password') }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    
     <label>Purana password</label><br>
     <input type="password" name="old_password" autocomplete="off"  required><br><br>
 

@@ -31,6 +31,7 @@
             <a href="{{ url_for('books.manage_copies', book_id=book.id) }}">Copies manage karo</a> |
             {% if current_user.role == 'admin' %}
             <form method="POST" action="{{ url_for('books.delete_book', book_id=book.id) }}" style="display:inline">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <button type="submit" onclick="return confirm('Pakka delete karna hai?')">Delete</button>
             </form>
             {% endif %}

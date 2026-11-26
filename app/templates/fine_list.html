@@ -17,6 +17,8 @@
         <td>{{ f.reason }}</td>
         <td>
             <form method="POST" action="{{ url_for('fines.pay_fine', fine_id=f.id) }}" style="display:inline">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                
                 <button type="submit">Mark as Paid</button>
             </form>
         </td>

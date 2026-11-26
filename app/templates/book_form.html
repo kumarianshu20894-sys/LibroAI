@@ -4,6 +4,8 @@
 <h2>{{ 'Book Edit Karo' if book else 'Nayi Book Add Karo' }}</h2>
 
 <form method="POST">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
     <label>Title *</label><br>
     <input type="text" name="title" value="{{ book.title if book else '' }}" required><br><br>
 

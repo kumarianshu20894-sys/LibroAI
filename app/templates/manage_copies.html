@@ -5,6 +5,7 @@
 
 <h3>Nayi copies add karo</h3>
 <form method="POST">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     <input type="hidden" name="action" value="add">
     <label>Kitni copies?</label>
     <input type="number" name="count" value="1" min="1">
@@ -33,6 +34,7 @@
                 <i>Issued/reserved</i>
             {% else %}
             <form method="POST" style="display:inline">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <input type="hidden" name="action" value="status">
                 <input type="hidden" name="copy_id" value="{{ copy.id }}">
                 <select name="new_status">

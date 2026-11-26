@@ -3,13 +3,17 @@ from dotenv import load_dotenv
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
+from flask_wtf.csrf import CSRFProtect
 from sqlalchemy import event
 from sqlalchemy.engine import Engine
+
 load_dotenv()
 
 db = SQLAlchemy()
 login_manager = LoginManager()
 login_manager.login_view = "auth.login"
+csrf = CSRFProtect()
+
 
 @event.listens_for(Engine, "connect")
 def enable_sqlite_foreign_keys(dbapi_connection, connection_record):
@@ -26,6 +30,7 @@ def create_app():
 
     db.init_app(app)
     login_manager.init_app(app)
+    csrf.init_app(app)
 
     from app import models
 
@@ -62,6 +67,6 @@ def create_app():
     app.register_blueprint(users)
 
     from app.settings_routes import settings_bp
-    app.register_blueprint(settings_bp) 
+    app.register_blueprint(settings_bp)
 
     return app

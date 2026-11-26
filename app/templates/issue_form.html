@@ -4,6 +4,8 @@
 <h2>Book Issue Karo</h2>
 
 <form method="POST">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    
     <label>Member</label><br>
     <select name="member_id" required>
         {% for m in members %}

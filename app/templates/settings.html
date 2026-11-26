@@ -3,6 +3,8 @@
 {% block content %}
 <h2>Library Settings</h2>
 <form method="POST">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    
     <table border="1" cellpadding="6">
         <tr><th>Setting</th><th>Value</th></tr>
         <tr><td>Normal loan (din)</td><td><input name="loan_days" value="{{ values.loan_days }}"></td></tr>
