@@ -1,14 +1,14 @@
 {% extends "base.html" %}
-{% block title %}My Dashboard{% endblock %}
+{% block title %}Mera Dashboard{% endblock %}
 {% block content %}
 <h2>Mera Dashboard</h2>
 
 {% if not member %}
-<p>Your member profile has not been created yet..</p>
+<p>Aapka member profile abhi nahi bana hai.</p>
 {% else %}
 <p>Membership: {{ member.membership_type }} | Status: {{ member.status }}</p>
 
-<h3>My Issued Books</h3>
+<h3>Meri Issued Books</h3>
 <table border="1" cellpadding="6">
     <tr><th>Book</th><th>Due Date</th></tr>
     {% for issue in my_issues %}
@@ -17,14 +17,38 @@
         <td>{{ issue.due_date }}</td>
     </tr>
     {% else %}
-    <tr><td colspan="2">There are no books issued.</td></tr>
+    <tr><td colspan="2">Koi book issued nahi hai.</td></tr>
     {% endfor %}
 </table>
-<h3>Ready Reservations</h3>
-{% for r in my_ready %}
-<p>"{{ r.book.title }}" aapke liye ready hai. Library mein aakar le jaayein.</p>
-{% else %}
-<p>Koi reservation ready nahi hai.</p>
-{% endfor %}
+
+<h3>Meri Reservations</h3>
+<table border="1" cellpadding="6">
+    <tr><th>Book</th><th>Status</th><th>Action</th></tr>
+    {% for r in my_ready %}
+    <tr>
+        <td>{{ r.book.title }}</td>
+        <td>Ready (library mein aakar le jaayein)</td>
+        <td>
+            <form method="POST" action="{{ url_for('reservations.cancel_reservation', reservation_id=r.id) }}" style="display:inline">
+                <button type="submit" onclick="return confirm('Reservation cancel karni hai?')">Cancel</button>
+            </form>
+        </td>
+    </tr>
+    {% endfor %}
+    {% for r in my_waiting %}
+    <tr>
+        <td>{{ r.book.title }}</td>
+        <td>Waiting</td>
+        <td>
+            <form method="POST" action="{{ url_for('reservations.cancel_reservation', reservation_id=r.id) }}" style="display:inline">
+                <button type="submit" onclick="return confirm('Reservation cancel karni hai?')">Cancel</button>
+            </form>
+        </td>
+    </tr>
+    {% endfor %}
+    {% if not my_ready and not my_waiting %}
+    <tr><td colspan="3">Koi reservation nahi hai.</td></tr>
+    {% endif %}
+</table>
 {% endif %}
 {% endblock %}
