@@ -3,6 +3,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash
 from app import db
 from app.models import Member, Copy, Issue, Fine, Reservation
 from app.routes import role_required
+from app.audit import log_action
 
 issues = Blueprint("issues", __name__, url_prefix="/issues")
 
@@ -72,6 +73,7 @@ def new_issue():
         )
         copy.status = "issued"
         db.session.add(issue)
+        log_action("issue", f"Copy {copy.id} to member {member.id}")
         db.session.commit()
 
         flash(f"Book issued successfully. Due date: {issue.due_date}")
@@ -125,6 +127,7 @@ def return_issue(issue_id):
             copy.status = "reserved"
             messages.append(f"Ye book {waiting.member.user.name} ke liye reserved ho gayi hai.")
 
+    log_action("return", f"Issue {issue.id}, condition: {condition}")
     db.session.commit()
     flash("Book returned. " + (" ".join(messages) if messages else "Koi fine nahi."))
     return redirect(url_for("issues.issue_list"))
@@ -148,6 +151,7 @@ def mark_lost(issue_id):
     issue.return_date = date.today()
     issue.copy.status = "lost"
     db.session.add(Fine(issue_id=issue.id, amount=lost_amount, reason="lost"))
+    log_action("lost", f"Issue {issue.id}")
     db.session.commit()
 
     flash(f"Book lost mark ho gayi. Charge Rs {lost_amount}.")
@@ -174,6 +178,7 @@ def renew_issue(issue_id):
 
     issue.due_date = issue.due_date + timedelta(days=RENEW_DAYS)
     issue.renew_count += 1
+    log_action("renew", f"Issue {issue.id}")
     db.session.commit()
 
     flash(f"Renewal ho gayi. Nayi due date: {issue.due_date}")

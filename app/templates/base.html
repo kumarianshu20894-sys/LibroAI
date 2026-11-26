@@ -15,6 +15,9 @@
             | <a href="{{ url_for('fines.fine_list') }}">Fines</a>    
             | <a href="{{ url_for('reservations.reservation_list') }}">Reservations</a>
         {% endif %}
+        {% if current_user.role == 'admin' %}
+            | <a href="{{ url_for('auth.audit_log') }}">Audit Log</a>
+        {% endif %}
         | <a href="{{ url_for('profile.edit_profile') }}">Profile</a>
         | <a href="{{ url_for('auth.logout') }}">Logout</a>
     </nav>

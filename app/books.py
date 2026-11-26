@@ -3,6 +3,7 @@ from flask_login import login_required
 from app import db
 from app.models import Book, Copy, Issue, Reservation
 from app.routes import role_required
+from app.audit import log_action
 
 books = Blueprint("books", __name__, url_prefix="/books")
 
@@ -67,6 +68,7 @@ def add_book():
                 is_reference=is_reference,
             ))
 
+        log_action("book_add", f"Book: {title}")
         db.session.commit()
         flash("Book add ho gayi.")
         return redirect(url_for("books.book_list"))
@@ -104,6 +106,7 @@ def edit_book(book_id):
         book.publisher = request.form.get("publisher", "").strip()
         book.description = request.form.get("description", "").strip()
         book.price = price
+        log_action("book_edit", f"Book id {book.id}: {book.title}")
         db.session.commit()
 
         flash("Book update ho gayi.")
@@ -134,6 +137,8 @@ def delete_book(book_id):
     if any(c.status != "available" for c in book.copies):
         flash("Is book ki kuch copies available nahi hain, isliye delete nahi ho sakti.")
         return redirect(url_for("books.book_list"))
+
+    log_action("book_delete", f"Book id {book.id}: {book.title}")
 
     for copy in book.copies:
         db.session.delete(copy)
@@ -170,6 +175,7 @@ def manage_copies(book_id):
                     shelf=shelf,
                     status="available",
                 ))
+            log_action("copies_add", f"Book id {book.id}: {count} copies, shelf {shelf}")
             db.session.commit()
             flash(f"{count} nayi copies add ho gayi.")
 
@@ -185,6 +191,7 @@ def manage_copies(book_id):
                 flash("Wrong status!")
             else:
                 copy.status = new_status
+                log_action("copy_status", f"Copy {copy.id} of book {book.id}: {new_status}")
                 db.session.commit()
                 flash(f"Copy {copy.copy_number} ka status {new_status} ho gaya.")
 

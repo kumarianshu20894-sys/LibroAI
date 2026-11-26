@@ -96,3 +96,13 @@ class Reservation(db.Model):
 
     book = db.relationship("Book", backref="reservations")
     member = db.relationship("Member", backref="reservations")
+
+class AuditLog(db.Model):
+    __tablename__ = "audit_logs"
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=True)
+    user_name = db.Column(db.String(100))
+    action = db.Column(db.String(50), nullable=False)
+    details = db.Column(db.Text)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)

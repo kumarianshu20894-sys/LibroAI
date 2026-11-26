@@ -1,16 +1,18 @@
-from flask import Blueprint ,render_template , request, redirect,url_for, flash
-from werkzeug.security import generate_password_hash
+from flask import Blueprint, render_template, request, redirect, url_for, flash
 from app import db
 from app.models import User, Member
 from app.routes import role_required
+from app.audit import log_action
 
 members = Blueprint("members", __name__, url_prefix="/members")
 
+
 @members.route("/")
-@role_required("admin","librarian")
+@role_required("admin", "librarian")
 def member_list():
     all_members = Member.query.join(User).order_by(User.name).all()
     return render_template("member_list.html", members=all_members)
+
 
 @members.route("/add", methods=["GET", "POST"])
 @role_required("admin", "librarian")
@@ -37,6 +39,7 @@ def add_member():
 
         member = Member(user_id=user.id, phone=phone, membership_type=membership_type)
         db.session.add(member)
+        log_action("member_add", f"Member: {email}")
         db.session.commit()
 
         flash("Member added successfully.")

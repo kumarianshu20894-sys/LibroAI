@@ -1,7 +1,7 @@
 from functools import wraps
 from flask import Blueprint, render_template, request, redirect, url_for, flash, abort
 from flask_login import login_user, logout_user, login_required, current_user
-from app.models import User, Book, Copy, Issue, Fine, Member ,Reservation
+from app.models import User, Book, Copy, Issue, Fine, Member ,Reservation,AuditLog
 from app import db
 from datetime import date
 
@@ -74,3 +74,9 @@ def dashboard():
 @role_required("admin")
 def admin_only():
     return "Sirf admin dekh sakta hai"
+
+@auth.route("/audit-log")
+@role_required("admin")
+def audit_log():
+    logs = AuditLog.query.order_by(AuditLog.created_at.desc()).limit(200).all()
+    return render_template("audit_log.html", logs=logs)
