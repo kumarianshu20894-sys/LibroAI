@@ -4,6 +4,7 @@ from flask_login import login_user, logout_user, login_required, current_user
 from app.models import User, Book, Copy, Issue, Fine, Member ,Reservation,AuditLog
 from app import db
 from datetime import date
+from app.notify import generate_due_reminders
 
 auth = Blueprint("auth", __name__)
 
@@ -69,6 +70,7 @@ def dashboard():
     my_ready = []
     my_waiting = []
     if member:
+        generate_due_reminders(member)
         my_issues = Issue.query.filter_by(member_id=member.id, return_date=None).all()
         my_ready = Reservation.query.filter_by(member_id=member.id, status="ready").all()
         my_waiting = Reservation.query.filter_by(member_id=member.id, status="waiting").all()

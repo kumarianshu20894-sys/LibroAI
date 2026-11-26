@@ -38,6 +38,15 @@ def create_app():
     def load_user(user_id):
         return models.User.query.get(int(user_id))
 
+    @app.context_processor
+    def inject_unread_count():
+        from flask_login import current_user
+        from app.models import Notification
+        if current_user.is_authenticated:
+            count = Notification.query.filter_by(user_id=current_user.id, is_read=False).count()
+            return {"unread_count": count}
+        return {"unread_count": 0}
+
     @app.route("/")
     def home():
         return "Library System chal raha hai!"
@@ -68,5 +77,8 @@ def create_app():
 
     from app.settings_routes import settings_bp
     app.register_blueprint(settings_bp)
+
+    from app.notifications import notifications
+    app.register_blueprint(notifications)
 
     return app

@@ -5,6 +5,7 @@ from app.models import Member, Copy, Issue, Fine, Reservation
 from app.routes import role_required
 from app.audit import log_action
 from app.settings import get_int
+from app.notify import notify
 
 issues = Blueprint("issues", __name__, url_prefix="/issues")
 
@@ -122,6 +123,7 @@ def return_issue(issue_id):
         )
         if waiting:
             waiting.status = "ready"
+            notify(waiting.member.user_id, f"'{book.title}' ab aapke liye ready hai. Library mein aakar le jaayein.")
             copy.status = "reserved"
             messages.append(f"Ye book {waiting.member.user.name} ke liye reserved ho gayi hai.")
 

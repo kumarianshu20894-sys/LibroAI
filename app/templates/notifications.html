@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Notifications{% endblock %}
+{% block content %}
+<h2>Notifications</h2>
+
+<form method="POST" action="{{ url_for('notifications.mark_all_read') }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <button type="submit">Sab read mark karo</button>
+</form>
+
+<table border="1" cellpadding="6">
+    <tr><th>Waqt</th><th>Message</th><th>Status</th></tr>
+    {% for n in items %}
+    <tr>
+        <td>{{ n.created_at.strftime('%d-%m-%Y %H:%M') }}</td>
+        <td>{{ n.message }}</td>
+        <td>{{ 'Read' if n.is_read else 'Unread' }}</td>
+    </tr>
+    {% else %}
+    <tr><td colspan="3">Koi notification nahi hai.</td></tr>
+    {% endfor %}
+</table>
+{% endblock %}

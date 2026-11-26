@@ -4,6 +4,7 @@ from app import db
 from app.models import Book, Member, Reservation
 from app.routes import role_required
 from app.audit import log_action
+from app.notify import notify
 
 reservations = Blueprint("reservations", __name__, url_prefix="/reservations")
 
