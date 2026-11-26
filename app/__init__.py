@@ -54,5 +54,8 @@ def create_app():
 
     from app.reservations import reservations
     app.register_blueprint(reservations)
+
+    from app.profile import profile
+    app.register_blueprint(profile)
     
     return app

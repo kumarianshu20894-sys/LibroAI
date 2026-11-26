@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Mera Profile{% endblock %}
+{% block content %}
+<h2>Mera Profile</h2>
+
+<h3>Naam badlo</h3>
+<form method="POST" action="{{ url_for('profile.edit_profile') }}">
+    <label>Naam</label><br>
+    <input type="text" name="name" value="{{ current_user.name }}" required><br><br>
+    <button type="submit">Save</button>
+</form>
+
+<p>Email: {{ current_user.email }} (role: {{ current_user.role }})</p>
+
+<h3>Password badlo</h3>
+<form method="POST" action="{{ url_for('profile.change_password') }}">
+    <label>Purana password</label><br>
+    <input type="password" name="old_password" autocomplete="off"  required><br><br>
+
+    <label>Naya password</label><br>
+    <input type="password" name="new_password" required><br><br>
+
+    <label>Naya password dobara</label><br>
+    <input type="password" name="confirm_password" required><br><br>
+
+    <button type="submit">Password badlo</button>
+</form>
+{% endblock %}
