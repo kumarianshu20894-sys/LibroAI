@@ -113,7 +113,6 @@ requirements.txt      Package list
 
 ## Upcoming features
 
-- Backup and restore
 - Notifications (due date reminder, ready message)
 - Reference books as a separate copy status (currently a flag only)
 - Member wishlist, reading goals, reading history, personal notes
