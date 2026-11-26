@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Users{% endblock %}
+{% block content %}
+<h2>Users</h2>
+<p><a href="{{ url_for('users.add_user') }}">Naya user add karo</a></p>
+
+<table border="1" cellpadding="6">
+    <tr><th>Naam</th><th>Email</th><th>Role</th><th>Status</th><th>Role badlo</th><th>Enable/Disable</th></tr>
+    {% for u in users %}
+    <tr>
+        <td>{{ u.name }}</td>
+        <td>{{ u.email }}</td>
+        <td>{{ u.role }}</td>
+        <td>{{ 'Active' if u.is_active_user else 'Disabled' }}</td>
+        <td>
+            <form method="POST" action="{{ url_for('users.change_role', user_id=u.id) }}" style="display:inline">
+                <select name="role">
+                    <option value="admin" {% if u.role == 'admin' %}selected{% endif %}>admin</option>
+                    <option value="librarian" {% if u.role == 'librarian' %}selected{% endif %}>librarian</option>
+                    <option value="member" {% if u.role == 'member' %}selected{% endif %}>member</option>
+                </select>
+                <button type="submit">Save</button>
+            </form>
+        </td>
+        <td>
+            <form method="POST" action="{{ url_for('users.toggle_user', user_id=u.id) }}" style="display:inline">
+                <button type="submit">{{ 'Disable' if u.is_active_user else 'Enable' }}</button>
+            </form>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

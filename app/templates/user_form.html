@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}User Add{% endblock %}
+{% block content %}
+<h2>Naya User Add Karo</h2>
+<form method="POST">
+    <label>Naam *</label><br>
+    <input type="text" name="name" required><br><br>
+
+    <label>Email *</label><br>
+    <input type="email" name="email" required><br><br>
+
+    <label>Password *</label><br>
+    <input type="password" name="password" required><br><br>
+
+    <label>Role</label><br>
+    <select name="role">
+        <option value="librarian">librarian</option>
+        <option value="admin">admin</option>
+        <option value="member">member</option>
+    </select><br><br>
+
+    <button type="submit">Save</button>
+</form>
+<br>
+<a href="{{ url_for('users.user_list') }}">Wapas list par</a>
+{% endblock %}

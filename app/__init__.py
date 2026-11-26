@@ -57,5 +57,8 @@ def create_app():
 
     from app.profile import profile
     app.register_blueprint(profile)
+
+    from app.users import users
+    app.register_blueprint(users)
     
     return app

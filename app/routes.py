@@ -30,9 +30,13 @@ def login():
         password = request.form.get("password", "")
 
         user = User.query.filter_by(email=email).first()
-        if user and user.check_password(password):
+        if user and user.check_password(password) and user.is_active_user:
             login_user(user)
             return redirect(url_for("auth.dashboard"))
+
+        if user and not user.is_active_user:
+            flash("Ye account band hai. Admin se sampark karein.")
+            return render_template("login.html")
 
         flash("Email ya password galat hai.")
 
