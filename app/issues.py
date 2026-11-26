@@ -4,16 +4,9 @@ from app import db
 from app.models import Member, Copy, Issue, Fine, Reservation
 from app.routes import role_required
 from app.audit import log_action
+from app.settings import get_int
 
 issues = Blueprint("issues", __name__, url_prefix="/issues")
-
-LOAN_DAYS = 14
-STUDENT_LOAN_DAYS = 21
-FINE_PER_DAY = 2
-FINE_CAP = 100
-MAX_BOOKS = {"student": 3, "staff": 5, "general": 2}
-RENEW_DAYS = 7
-MAX_RENEWALS = 1
 
 
 @issues.route("/")
@@ -58,13 +51,18 @@ def new_issue():
             flash("Reference books cannot be borrowed; they are for reading in the library only.")
             return redirect(url_for("issues.new_issue"))
 
+        limit_map = {
+            "student": get_int("max_student"),
+            "staff": get_int("max_staff"),
+            "general": get_int("max_general"),
+        }
+        limit = limit_map.get(member.membership_type, get_int("max_general"))
         active_count = Issue.query.filter_by(member_id=member.id, return_date=None).count()
-        limit = MAX_BOOKS.get(member.membership_type, 2)
         if active_count >= limit:
             flash(f"This member's limit is {limit} books, and they have already borrowed {active_count}.")
             return redirect(url_for("issues.new_issue"))
 
-        loan_days = STUDENT_LOAN_DAYS if member.membership_type == "student" else LOAN_DAYS
+        loan_days = get_int("student_loan_days") if member.membership_type == "student" else get_int("loan_days")
         issue = Issue(
             copy_id=copy.id,
             member_id=member.id,
@@ -106,7 +104,7 @@ def return_issue(issue_id):
 
     late_days = (issue.return_date - issue.due_date).days
     if late_days > 0:
-        amount = min(late_days * FINE_PER_DAY, FINE_CAP)
+        amount = min(late_days * get_int("fine_per_day"), get_int("fine_cap"))
         db.session.add(Fine(issue_id=issue.id, amount=amount, reason="late"))
         messages.append(f"{late_days} din late, late fine Rs {amount}.")
 
@@ -167,7 +165,7 @@ def renew_issue(issue_id):
         flash("Ye book pehle hi return ho chuki hai.")
         return redirect(url_for("issues.issue_list"))
 
-    if issue.renew_count >= MAX_RENEWALS:
+    if issue.renew_count >= 1:
         flash("Is book ki renewal limit (1 baar) khatam ho chuki hai.")
         return redirect(url_for("issues.issue_list"))
 
@@ -176,7 +174,7 @@ def renew_issue(issue_id):
         flash("Is book ki koi reservation hai, isliye renew nahi ho sakti.")
         return redirect(url_for("issues.issue_list"))
 
-    issue.due_date = issue.due_date + timedelta(days=RENEW_DAYS)
+    issue.due_date = issue.due_date + timedelta(days=get_int("renew_days"))
     issue.renew_count += 1
     log_action("renew", f"Issue {issue.id}")
     db.session.commit()

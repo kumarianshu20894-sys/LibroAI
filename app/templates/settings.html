@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Settings{% endblock %}
+{% block content %}
+<h2>Library Settings</h2>
+<form method="POST">
+    <table border="1" cellpadding="6">
+        <tr><th>Setting</th><th>Value</th></tr>
+        <tr><td>Normal loan (din)</td><td><input name="loan_days" value="{{ values.loan_days }}"></td></tr>
+        <tr><td>Student loan (din)</td><td><input name="student_loan_days" value="{{ values.student_loan_days }}"></td></tr>
+        <tr><td>Renewal extension (din)</td><td><input name="renew_days" value="{{ values.renew_days }}"></td></tr>
+        <tr><td>Fine per din (Rs)</td><td><input name="fine_per_day" value="{{ values.fine_per_day }}"></td></tr>
+        <tr><td>Fine cap (Rs)</td><td><input name="fine_cap" value="{{ values.fine_cap }}"></td></tr>
+        <tr><td>General max books</td><td><input name="max_general" value="{{ values.max_general }}"></td></tr>
+        <tr><td>Student max books</td><td><input name="max_student" value="{{ values.max_student }}"></td></tr>
+        <tr><td>Staff max books</td><td><input name="max_staff" value="{{ values.max_staff }}"></td></tr>
+    </table>
+    <br>
+    <button type="submit">Save</button>
+</form>
+{% endblock %}

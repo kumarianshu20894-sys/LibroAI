@@ -107,3 +107,9 @@ class AuditLog(db.Model):
     action = db.Column(db.String(50), nullable=False)
     details = db.Column(db.Text)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+class Setting(db.Model):
+    __tablename__ = "settings"
+
+    key = db.Column(db.String(50), primary_key=True)
+    value = db.Column(db.String(200), nullable=False)

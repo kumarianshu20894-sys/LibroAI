@@ -60,5 +60,8 @@ def create_app():
 
     from app.users import users
     app.register_blueprint(users)
-    
+
+    from app.settings_routes import settings_bp
+    app.register_blueprint(settings_bp) 
+
     return app
