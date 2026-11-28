@@ -87,4 +87,7 @@ def create_app():
     from app.goals_routes import goals_bp
     app.register_blueprint(goals_bp)
 
+    from app.history import history_bp
+    app.register_blueprint(history_bp)
+
     return app

@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Reading History{% endblock %}
+{% block content %}
+<h2>Meri Reading History</h2>
+<table border="1" cellpadding="6">
+    <tr><th>Book</th><th>Author</th><th>Return date</th></tr>
+    {% for i in past %}
+    <tr>
+        <td>{{ i.copy.book.title }}</td>
+        <td>{{ i.copy.book.author or '-' }}</td>
+        <td>{{ i.return_date }}</td>
+    </tr>
+    {% else %}
+    <tr><td colspan="3">Abhi koi book return nahi hui.</td></tr>
+    {% endfor %}
+</table>
+
+<h3>Aapke liye suggestions</h3>
+<p>Ye books un authors ki hain jinhe aapne pehle padha hai.</p>
+<table border="1" cellpadding="6">
+    <tr><th>Book</th><th>Author</th><th>Available copies</th></tr>
+    {% for b in suggestions %}
+    <tr>
+        <td><a href="{{ url_for('books.book_detail', book_id=b.id) }}">{{ b.title }}</a></td>
+        <td>{{ b.author }}</td>
+        <td>{{ b.copies|selectattr('status', 'equalto', 'available')|list|length }}</td>
+    </tr>
+    {% else %}
+    <tr><td colspan="3">Abhi koi suggestion nahi hai. Pehle kuch books return karein.</td></tr>
+    {% endfor %}
+</table>
+{% endblock %}
