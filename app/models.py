@@ -135,3 +135,16 @@ class Wishlist(db.Model):
 
     member = db.relationship("Member", backref="wishlist_items")
     book = db.relationship("Book", backref="wishlist_entries")
+
+class ReadingGoal(db.Model):
+    __tablename__ = "reading_goals"
+
+    id = db.Column(db.Integer, primary_key=True)
+    member_id = db.Column(db.Integer, db.ForeignKey("members.id"), nullable=False)
+    year = db.Column(db.Integer, nullable=False)
+    month = db.Column(db.Integer, nullable=False)
+    target = db.Column(db.Integer, nullable=False)
+
+    __table_args__ = (db.UniqueConstraint("member_id", "year", "month", name="uq_goal_member_month"),)
+
+    member = db.relationship("Member", backref="reading_goals")

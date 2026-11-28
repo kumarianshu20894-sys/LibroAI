@@ -12,7 +12,7 @@
             | <a href="{{ url_for('books.add_book') }}">Add Book</a>
             | <a href="{{ url_for('members.member_list') }}">Members</a>
             | <a href="{{ url_for('issues.issue_list') }}">Issues</a>
-            | <a href="{{ url_for('fines.fine_list') }}">Fines</a>    
+            | <a href="{{ url_for('fines.fine_list') }}">Fines</a>
             | <a href="{{ url_for('reservations.reservation_list') }}">Reservations</a>
         {% endif %}
         {% if current_user.role == 'admin' %}
@@ -22,6 +22,9 @@
         {% endif %}
         | <a href="{{ url_for('notifications.notification_list') }}">Notifications ({{ unread_count }})</a>
         | <a href="{{ url_for('wishlist.wishlist_list') }}">Wishlist</a>
+        {% if current_user.role == 'member' %}
+            | <a href="{{ url_for('goals_bp.goals_page') }}">Goals</a>
+        {% endif %}
         | <a href="{{ url_for('profile.edit_profile') }}">Profile</a>
         | <a href="{{ url_for('auth.logout') }}">Logout</a>
     </nav>

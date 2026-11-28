@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}Reading Goals{% endblock %}
+{% block content %}
+<h2>Reading Goals</h2>
+<p><b>{{ month_name }}</b></p>
+
+<h3>Is mahine ka goal</h3>
+{% if goal %}
+    <p>Aapka target: <b>{{ goal.target }}</b> books</p>
+
+    <p>Progress: {{ done }} / {{ goal.target }}</p>
+    <progress value="{{ done }}" max="{{ goal.target }}" style="width:300px;"></progress>
+    <p>{{ percent }}% complete</p>
+
+    {% if achieved %}
+        <p><b>Badhai ho! Aapne is mahine ka goal poora kar liya.</b></p>
+    {% else %}
+        <p>{{ remaining }} book{{ '' if remaining == 1 else 's' }} aur padhni hai.</p>
+    {% endif %}
+
+    <form method="POST" action="{{ url_for('goals_bp.goals_page') }}" style="display:inline">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input type="hidden" name="action" value="delete">
+        <button type="submit" onclick="return confirm('Goal hatana hai?')">Goal hatao</button>
+    </form>
+{% else %}
+    <p>Aapne is mahine ka goal abhi set nahi kiya hai.</p>
+{% endif %}
+
+<h3>{{ 'Target badlo' if goal else 'Target set karo' }}</h3>
+<form method="POST" action="{{ url_for('goals_bp.goals_page') }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input type="hidden" name="action" value="save">
+    <label>Is mahine mein kitni books padhni hain?</label>
+    <input type="number" name="target" min="1" max="100" placeholder="Apna target likhein" required>
+    <button type="submit">Save</button>
+</form>
+
+<h3>Is mahine return ki hui books</h3>
+<table border="1" cellpadding="6">
+    <tr><th>Book</th><th>Return date</th></tr>
+    {% for i in done_list %}
+    <tr>
+        <td>{{ i.copy.book.title }}</td>
+        <td>{{ i.return_date }}</td>
+    </tr>
+    {% else %}
+    <tr><td colspan="2">Abhi koi book return nahi hui.</td></tr>
+    {% endfor %}
+</table>
+
+<h3>Streak</h3>
+<p>{{ streak }} mahine lagatar goal poora hua.</p>
+
+<h3>Pichle mahine</h3>
+<table border="1" cellpadding="6">
+    <tr><th>Mahina</th><th>Target</th><th>Padhi</th><th>Result</th></tr>
+    {% for h in history %}
+    <tr>
+        <td>{{ h.label }}</td>
+        <td>{{ h.target }}</td>
+        <td>{{ h.done }}</td>
+        <td>{{ 'Poora' if h.ok else 'Adhoora' }}</td>
+    </tr>
+    {% else %}
+    <tr><td colspan="4">Abhi koi purana record nahi hai.</td></tr>
+    {% endfor %}
+</table>
+{% endblock %}
+

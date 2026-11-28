@@ -84,4 +84,7 @@ def create_app():
     from app.wishlist import wishlist
     app.register_blueprint(wishlist)
 
+    from app.goals_routes import goals_bp
+    app.register_blueprint(goals_bp)
+
     return app
