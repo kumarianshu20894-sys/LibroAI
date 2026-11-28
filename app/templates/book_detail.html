@@ -30,6 +30,13 @@
 </form>
 {% endif %}
 
+{% if current_user.role == 'member' %}
+<form method="POST" action="{{ url_for('wishlist.add_to_wishlist', book_id=book.id) }}" style="display:inline">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <button type="submit">Wishlist mein add karo</button>
+</form>
+{% endif %}
+
 <br>
 {% if current_user.role in ['admin', 'librarian'] %}
     <a href="{{ url_for('books.edit_book', book_id=book.id) }}">Edit</a> |

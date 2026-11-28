@@ -21,6 +21,7 @@
             | <a href="{{ url_for('settings_bp.settings_page') }}">Settings</a>
         {% endif %}
         | <a href="{{ url_for('notifications.notification_list') }}">Notifications ({{ unread_count }})</a>
+        | <a href="{{ url_for('wishlist.wishlist_list') }}">Wishlist</a>
         | <a href="{{ url_for('profile.edit_profile') }}">Profile</a>
         | <a href="{{ url_for('auth.logout') }}">Logout</a>
     </nav>

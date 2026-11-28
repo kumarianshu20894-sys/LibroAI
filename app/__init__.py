@@ -81,4 +81,7 @@ def create_app():
     from app.notifications import notifications
     app.register_blueprint(notifications)
 
+    from app.wishlist import wishlist
+    app.register_blueprint(wishlist)
+
     return app

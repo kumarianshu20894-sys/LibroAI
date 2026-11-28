@@ -122,3 +122,16 @@ class Notification(db.Model):
     message = db.Column(db.Text, nullable=False)
     is_read = db.Column(db.Boolean, nullable=False, default=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+class Wishlist(db.Model):
+    __tablename__ = "wishlists"
+
+    id = db.Column(db.Integer, primary_key=True)
+    member_id = db.Column(db.Integer, db.ForeignKey("members.id"), nullable=False)
+    book_id = db.Column(db.Integer, db.ForeignKey("books.id"), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    __table_args__ = (db.UniqueConstraint("member_id", "book_id", name="uq_wishlist_member_book"),)
+
+    member = db.relationship("Member", backref="wishlist_items")
+    book = db.relationship("Book", backref="wishlist_entries")
