@@ -4,6 +4,7 @@ from app import db
 from app.models import Book, Copy, Issue, Reservation
 from app.routes import role_required
 from app.audit import log_action
+from app.isbn import fetch_book_by_isbn
 
 books = Blueprint("books", __name__, url_prefix="/books")
 
@@ -23,6 +24,18 @@ def book_list():
 
     pagination = query.order_by(Book.title).paginate(page=page, per_page=10, error_out=False)
     return render_template("book_list.html", pagination=pagination, q=q)
+
+
+@books.route("/lookup-isbn", methods=["POST"])
+@role_required("admin", "librarian")
+def lookup_isbn():
+    isbn = request.form.get("isbn", "").strip()
+    info = fetch_book_by_isbn(isbn)
+    if info is None:
+        flash("Is ISBN ki details Open Library par nahi mili. Manually bharein.")
+        return render_template("book_form.html", book=None, form=request.form)
+    flash("Details mil gayi. Check karke save karein.")
+    return render_template("book_form.html", book=None, form=info)
 
 
 @books.route("/add", methods=["GET", "POST"])

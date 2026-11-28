@@ -1,28 +1,38 @@
 {% extends "base.html" %}
 {% block title %}{{ 'Book Edit' if book else 'Book Add' }}{% endblock %}
 {% block content %}
+{% set v = book or form or {} %}
 <h2>{{ 'Book Edit Karo' if book else 'Nayi Book Add Karo' }}</h2>
 
-<form method="POST">
+{% if not book %}
+<form method="POST" action="{{ url_for('books.lookup_isbn') }}" style="margin-bottom:16px;">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <label>ISBN se details laao</label>
+    <input type="text" name="isbn" value="{{ v.isbn or '' }}" placeholder="978...">
+    <button type="submit">Details laao</button>
+</form>
+{% endif %}
+
+<form method="POST" action="{{ url_for('books.edit_book', book_id=book.id) if book else url_for('books.add_book') }}">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
     <label>Title *</label><br>
-    <input type="text" name="title" value="{{ book.title if book else '' }}" required><br><br>
+    <input type="text" name="title" value="{{ v.title or '' }}" required><br><br>
 
     <label>Author</label><br>
-    <input type="text" name="author" value="{{ book.author if book and book.author else '' }}"><br><br>
+    <input type="text" name="author" value="{{ v.author or '' }}"><br><br>
 
     <label>ISBN</label><br>
-    <input type="text" name="isbn" value="{{ book.isbn if book and book.isbn else '' }}"><br><br>
+    <input type="text" name="isbn" value="{{ v.isbn or '' }}"><br><br>
 
     <label>Publisher</label><br>
-    <input type="text" name="publisher" value="{{ book.publisher if book and book.publisher else '' }}"><br><br>
+    <input type="text" name="publisher" value="{{ v.publisher or '' }}"><br><br>
 
     <label>Price (Rs) *</label><br>
     <input type="number" name="price" step="0.01" min="0" value="{{ book.price if book and book.price else '' }}" required><br><br>
 
     <label>Description</label><br>
-    <textarea name="description" rows="4" cols="40">{{ book.description if book and book.description else '' }}</textarea><br><br>
+    <textarea name="description" rows="4" cols="40">{{ v.description or '' }}</textarea><br><br>
 
     {% if not book %}
     <label>Kitni copies?</label><br>
@@ -31,11 +41,11 @@
     <label>Shelf</label><br>
     <input type="text" name="shelf" placeholder="jaise A-12"><br><br>
 
-    <label><input type="checkbox" name="is_reference" value="1"> Reference book (can't take home)</label><br><br>
+    <label><input type="checkbox" name="is_reference" value="1"> Reference book (ghar nahi jaayegi)</label><br><br>
     {% endif %}
 
     <button type="submit">Save</button>
 </form>
 <br>
-<a href="{{ url_for('books.book_list') }}">Back to list</a>
+<a href="{{ url_for('books.book_list') }}">Wapas list par</a>
 {% endblock %}
