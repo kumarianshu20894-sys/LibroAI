@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Backup{% endblock %}
+{% block content %}
+<h2>Backup aur Restore</h2>
+
+<form method="POST" action="{{ url_for('backup_bp.create') }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <button type="submit">Naya backup banao</button>
+</form>
+
+<h3>Available backups</h3>
+<table border="1" cellpadding="6">
+    <tr><th>File</th><th>Download</th><th>Restore</th></tr>
+    {% for b in backups %}
+    <tr>
+        <td>{{ b }}</td>
+        <td><a href="{{ url_for('backup_bp.download', name=b) }}">Download</a></td>
+        <td>
+            <form method="POST" action="{{ url_for('backup_bp.restore', name=b) }}" style="display:inline">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <input type="text" name="confirm" placeholder="RESTORE likho" size="12">
+                <button type="submit">Restore</button>
+            </form>
+        </td>
+    </tr>
+    {% else %}
+    <tr><td colspan="3">Koi backup nahi hai.</td></tr>
+    {% endfor %}
+</table>
+
+<p><b>Dhyan do:</b> Restore se current database badal jayega. Restore se pehle
+apne aap ek safety backup ban jata hai.</p>
+{% endblock %}

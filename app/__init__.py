@@ -93,4 +93,7 @@ def create_app():
     from app.notes import notes_bp
     app.register_blueprint(notes_bp)
 
+    from app.backup import backup_bp
+    app.register_blueprint(backup_bp)
+
     return app
