@@ -90,4 +90,7 @@ def create_app():
     from app.history import history_bp
     app.register_blueprint(history_bp)
 
+    from app.notes import notes_bp
+    app.register_blueprint(notes_bp)
+
     return app

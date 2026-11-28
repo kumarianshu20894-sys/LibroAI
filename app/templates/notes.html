@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Mere Notes{% endblock %}
+{% block content %}
+<h2>Mere Reading Notes</h2>
+
+<h3>Naya note ya quote likho</h3>
+<form method="POST" action="{{ url_for('notes_bp.add_note') }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <label>Book</label><br>
+    <select name="book_id" required>
+        {% for b in books %}
+        <option value="{{ b.id }}">{{ b.title }}</option>
+        {% endfor %}
+    </select><br><br>
+
+    <label>Type</label><br>
+    <select name="note_type">
+        <option value="note">Note</option>
+        <option value="quote">Quote</option>
+    </select><br><br>
+
+    <label>Likhein</label><br>
+    <textarea name="content" rows="4" cols="50" required></textarea><br><br>
+    <button type="submit">Save</button>
+</form>
+
+<h3>Mere notes</h3>
+{% for n in notes %}
+<details style="border:1px solid #ccc; padding:8px; margin-bottom:8px;">
+    <summary>
+        <b>{{ n.book.title }}</b> | {{ n.note_type }} | {{ n.created_at.strftime('%d-%m-%Y') }}
+    </summary>
+    <p style="white-space:pre-wrap; margin-top:8px;">{{ n.content }}</p>
+    <form method="POST" action="{{ url_for('notes_bp.delete_note', note_id=n.id) }}" style="display:inline">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button type="submit" onclick="return confirm('Note delete karna hai?')">Delete</button>
+    </form>
+</details>
+{% else %}
+<p>Abhi koi note nahi hai.</p>
+{% endfor %}
+
+
+{% endblock %}

@@ -25,6 +25,7 @@
         {% if current_user.role == 'member' %}
             | <a href="{{ url_for('goals_bp.goals_page') }}">Goals</a>
             | <a href="{{ url_for('history_bp.history_page') }}">Reading History</a>
+            | <a href="{{ url_for('notes_bp.notes_list') }}">Notes</a>
         {% endif %}
         | <a href="{{ url_for('profile.edit_profile') }}">Profile</a>
         | <a href="{{ url_for('auth.logout') }}">Logout</a>

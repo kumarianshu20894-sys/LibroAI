@@ -148,3 +148,16 @@ class ReadingGoal(db.Model):
     __table_args__ = (db.UniqueConstraint("member_id", "year", "month", name="uq_goal_member_month"),)
 
     member = db.relationship("Member", backref="reading_goals")
+
+class ReadingNote(db.Model):
+    __tablename__ = "reading_notes"
+
+    id = db.Column(db.Integer, primary_key=True)
+    member_id = db.Column(db.Integer, db.ForeignKey("members.id"), nullable=False)
+    book_id = db.Column(db.Integer, db.ForeignKey("books.id"), nullable=False)
+    note_type = db.Column(db.String(10), nullable=False, default="note")  # note, quote
+    content = db.Column(db.Text, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    member = db.relationship("Member", backref="reading_notes")
+    book = db.relationship("Book", backref="reading_notes")
